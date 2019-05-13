@@ -15,7 +15,7 @@ type Question struct{
 
 func main(){
 	bootup()
-
+	//Initialize slice to store the questions
 	questions := parse_csv()
 
 	correct := 0
@@ -26,6 +26,7 @@ func main(){
 		fmt.Printf("%s = ", q.question)
 		
 		var attempt string
+		//Read users answer
 		fmt.Scanf("%s", &attempt)
 		
 		if attempt == q.answer{
@@ -34,7 +35,7 @@ func main(){
 
 		total ++
 	}
-	
+	//Print results
 	results(correct, total)
 }
 
