@@ -4,7 +4,8 @@ import("fmt"
 		"os"
 		"encoding/csv"
 		"io"
-		"log")
+		"log"
+		"time")
 
 
 type Question struct{
@@ -16,11 +17,22 @@ type Question struct{
 func main(){
 	bootup()
 	//Initialize slice to store the questions
-	questions := parse_csv()
+	total_time := get_time()
+	timer1 := time.NewTimer(time.Duration(total_time)*time.Second)
+	
+	
+
+	questions, total := parse_csv()
 
 	correct := 0
-	total := 0
-
+	
+	go func(){
+		<-timer1.C
+		fmt.Println("Times Up!")
+		results(correct, total)
+		os.Exit(0)
+	}()
+	
 	for _,q := range questions{
 		
 		fmt.Printf("%s = ", q.question)
@@ -32,8 +44,6 @@ func main(){
 		if attempt == q.answer{
 			correct++
 		}
-
-		total ++
 	}
 	//Print results
 	results(correct, total)
@@ -48,9 +58,10 @@ func bootup(){
 
 }
 
-func parse_csv() []Question {
+func parse_csv() ([]Question, int) {
 	csvFile, _ := os.Open("problems.csv")
 	reader := csv.NewReader(csvFile)
+	t_questions := 0
 	//Create questions array to hold questions
 	var questions []Question
 
@@ -66,7 +77,15 @@ func parse_csv() []Question {
 			question: line[0],
 			answer: line[1],
 		})
+		t_questions ++
 	}
 	
-	return questions
+	return questions,t_questions
+}
+
+func get_time() int{
+	fmt.Println("How much time do you want")
+	var time int
+	fmt.Scanf("%d", &time)
+	return time
 }
